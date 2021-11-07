@@ -1,21 +1,22 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import FlashMessage from "react-native-flash-message";
+
+import { NavigationContainer } from '@react-navigation/native';
+import Tabs from './src/Navigation/Tabs'
+import store from './src/slice/store';
+import { Provider } from 'react-redux';
+
+import Chat from './src/screens/Chat';
+import QRCode from './src/components/QRCode'
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+      <NavigationContainer >
+        <Tabs />
+        <FlashMessage position="top" />
+        {/* <QRCode /> */}
+      </NavigationContainer>
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
