@@ -9,10 +9,10 @@ import deliveryAPI from '../api/deliveryAPI'
 import { useSelector } from 'react-redux'
 
 const DATA = [
-    { name: 'Lấy hàng', mount: 100, color: '#435560', legendFontColor: '#435560', legendFontSize: 15 },
-    { name: 'Đang giao', mount: 200, color: '#6E7C7C', legendFontColor: '#6E7C7C', legendFontSize: 15 },
-    { name: 'Đã giao', mount: 150, color: '#92967D', legendFontColor: '#92967D', legendFontSize: 15 },
-    { name: 'Đã hủy', mount: 10, color: '#C8C6A7', legendFontColor: '#C8C6A7', legendFontSize: 15 },
+    { name: 'Ordered', mount: 100, color: '#435560', legendFontColor: '#435560', legendFontSize: 0 },
+    { name: 'Delivering', mount: 200, color: '#6E7C7C', legendFontColor: '#6E7C7C', legendFontSize: 0 },
+    { name: 'Delivered', mount: 10, color: '#92967D', legendFontColor: '#92967D', legendFontSize: 0 },
+    { name: 'Canceled', mount: 10, color: '#C8C6A7', legendFontColor: '#C8C6A7', legendFontSize: 0 },
 ]
 
 export default function Home() {
@@ -37,11 +37,25 @@ export default function Home() {
             try {
                 const temp = await deliveryAPI.statistic(item, token);
                 let datas = [];
-                temp.forEach((item, index) => {
-                    datas.push({ 
-                        ...DATA[index],
-                        mount: item.Mount,
-                    })
+                // temp.forEach((item, index) => {
+                //     datas.push({
+                //         ...DATA[index],
+                //         mount: item.Mount,
+                //     })
+                // })
+                DATA.forEach((item) => {
+                    const indexFind = temp.findIndex(i => i.Status === item.name);
+                    if (indexFind !== -1) {
+                        datas.push({
+                            ...item,
+                            mount: temp[indexFind].Mount,
+                        })
+                    } else {
+                        datas.push({
+                            ...item,
+                            mount: 0,
+                        })
+                    }
                 })
                 setData(datas);
             } catch (error) {
@@ -71,11 +85,25 @@ export default function Home() {
             try {
                 const temp = await deliveryAPI.statistic(item, token);
                 let datas = [];
-                temp.forEach((item, index) => {
-                    datas.push({ 
-                        ...DATA[index],
-                        mount: item.Mount,
-                    })
+                // temp.forEach((item, index) => {
+                //     datas.push({
+                //         ...DATA[index],
+                //         mount: item.Mount,
+                //     })
+                // })
+                DATA.forEach((item) => {
+                    const indexFind = temp.findIndex(i => i.Status === item.name);
+                    if (indexFind !== -1) {
+                        datas.push({
+                            ...item,
+                            mount: temp[indexFind].Mount,
+                        })
+                    } else {
+                        datas.push({
+                            ...item,
+                            mount: 0,
+                        })
+                    }
                 })
                 setData(datas);
             } catch (error) {
@@ -152,22 +180,22 @@ export default function Home() {
                     </View>
                 </View>
             </View>
-            <Text style={{fontSize: 22, color: '#112D4E', fontWeight: 'bold', alignSelf: 'center', paddingVertical: 20}}>Biểu Đồ</Text>
+            <Text style={{ fontSize: 22, color: '#112D4E', fontWeight: 'bold', alignSelf: 'center', paddingVertical: 20 }}>Biểu Đồ</Text>
             <View style={styles.chart}>
                 <PieChart
                     data={data}
-                    width={Dimensions.get("window").width - 40}
+                    width={Dimensions.get("window").width}
                     height={250}
                     chartConfig={{
                         color: (opacity = 1) => `rgba(17, 45, 78, ${opacity})`,
                         style: {
-                            borderRadius: 16,
-                            marginVertical: 8,
+                            marginLeft: 100
                         }
                     }}
                     accessor="mount"
-                    paddingLeft="15"
+                    paddingLeft="95"
                     absolute
+                    hasLegend={false}
                 />
             </View>
         </View>
@@ -207,8 +235,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     chart: {
-        justifyContent: 'center',
-        alignItems: 'center',
+
         backgroundColor: '#F9F7F7',
         borderRadius: 10,
         marginHorizontal: 10,

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
+import { Button } from 'react-native-elements';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
-export default function QRCode() {
+export default function QRCode(props) {
+
   const [hasPermission, setHasPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
+  const [scanned, setScanned] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -15,8 +17,8 @@ export default function QRCode() {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-    console.log(data);
+    // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    props.handleQR(data);
   };
 
   if (hasPermission === null) {
@@ -27,22 +29,30 @@ export default function QRCode() {
   }
 
   return (
-    <View>
-        <View style={styles.container}>
-      <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-        style={StyleSheet.absoluteFillObject}
-      />
-      {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
-    </View>
-    <Text>abccc</Text>
+    <View style={{justifyContent: 'center', alignItems: 'center', height: 350}}>
+      <View style={styles.container}>
+        <BarCodeScanner
+          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+          style={StyleSheet.absoluteFillObject}
+
+        />
+      </View>
+      <View style={{flex: 2}}>
+        <Button title='Tiến hành quyét mã'
+          type='solid'
+          onPress={() => setScanned(false)} 
+          containerStyle={{marginTop: 10, borderRadius: 5}}/>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        paddingTop: 300
-    }
+  container: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    width: 300,
+    height: 300, 
+  }
 })

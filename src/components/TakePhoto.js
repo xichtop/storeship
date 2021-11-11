@@ -31,7 +31,7 @@ export default class PhotoTake extends React.Component {
   constructor (props) {
     super(props);
     this.state = {
-      image: 'https://static.thenounproject.com/png/396915-200.png',
+      image: 'https://us.123rf.com/450wm/dirkercken/dirkercken1403/dirkercken140300029/26322661-photos-bouton-image-et-la-photo-galerie-ic%C3%B4ne.jpg?ver=6',
       uploading: false,
     }
   }
@@ -58,10 +58,11 @@ export default class PhotoTake extends React.Component {
 
   render() {
     let { image } = this.state;
+    let { width, height } = this.props;
 
     return (
       <View style={{ alignItems: "center", justifyContent: "center" }}>
-        <Image source={{ uri: image }} style={{ width: 100, height: 100, borderRadius: 5 }} />
+        <Image source={{ uri: image }} style={{ width: width, height: height, borderRadius: 5 }} />
         <View style={{flexDirection: 'row', marginTop: 10}}>
           <Button
             onPress={this._pickImage}
@@ -118,8 +119,6 @@ export default class PhotoTake extends React.Component {
       allowsEditing: true,
       aspect: [4, 3],
     });
-
-    console.log({ pickerResult });
 
     this._handleImagePicked(pickerResult);
   };

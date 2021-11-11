@@ -12,11 +12,12 @@ import RNPickerSelect from 'react-native-picker-select';
 import provinceAPI from '../api/provinceAPI';
 import districtAPI from '../api/districtAPI';
 import wardAPI from '../api/wardAPI';
+import storeAPI from '../api/storeAPI';
 import TakePhoto from './TakePhoto';
 import { useDispatch } from 'react-redux';
 import { create } from '../slice/registerSlice';
 import StepIndicator from 'react-native-step-indicator';
-const labels = ["Thông Tin", "Ngân Hàng", "CMND"];
+const labels = ["Thông Tin", "Ngân Hàng", "CCCD"];
 const customStyles = {
     stepIndicatorSize: 30,
     currentStepIndicatorSize: 35,
@@ -57,14 +58,10 @@ const schema = yup.object().shape({
 
 export default function Post({ navigation }) {
 
-    const { control, handleSubmit, formState: { errors } } = useForm({
+    const { control, handleSubmit, formState: { errors }, setError } = useForm({
         resolver: yupResolver(schema),
         reValidateMode: 'onChange'
     });
-
-    // const token = useSelector(state => state.store.token);
-
-    // const [isLoading, setIsLoading] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -78,7 +75,7 @@ export default function Post({ navigation }) {
 
     const [enableWard, setEnableWard] = useState('');
 
-    const [img, setImg] = useState('https://static.thenounproject.com/png/396915-200.png');
+    const [img, setImg] = useState('https://us.123rf.com/450wm/dirkercken/dirkercken1403/dirkercken140300029/26322661-photos-bouton-image-et-la-photo-galerie-ic%C3%B4ne.jpg?ver=6');
 
     useEffect(() => {
         const fetchListProvinces = async () => {
@@ -147,28 +144,43 @@ export default function Post({ navigation }) {
 
     const onSubmit = (data) => {
 
-        if (img === 'https://static.thenounproject.com/png/396915-200.png') {
-            Alert.alert('Vui lòng tải ảnh lên');
-        }
-        else {
-            const store = {
-                Username: data.username,
-                Password: data.password,
-                Email: data.email,
-                StoreName: data.name,
-                Phone: data.phone,
-                ProvinceCode: data.province,
-                DistrictCode: data.district,
-                WardCode: data.ward,
-                AddressDetail: data.address,
-                Picture: img,
+        const fetchStores = async () => {
+            try {
+                const accounts = await storeAPI.check(data.username);
+                if (accounts.length > 0) {
+                    // Alert.alert('Tên đăng nhập đã tồn tại');
+                    setError("username", {
+                        type: "manual",
+                        message: "Tên đăng nhập đã tồn tại!",
+                    });
+                }
+                else if (img === 'https://static.thenounproject.com/png/396915-200.png') {
+                    Alert.alert('Vui lòng tải ảnh lên');
+                }
+                else {
+                    const store = {
+                        Username: data.username,
+                        Password: data.password,
+                        Email: data.email,
+                        StoreName: data.name,
+                        Phone: data.phone,
+                        ProvinceCode: data.province,
+                        DistrictCode: data.district,
+                        WardCode: data.ward,
+                        AddressDetail: data.address,
+                        Picture: img,
+                    }
+                    const action = create({
+                        store
+                    })
+                    dispatch(action);
+                    navigation.navigate('Bank')
+                }
+            } catch (error) {
+                console.log("Failed to fetch provinces list: ", error);
             }
-            const action = create({
-                store
-            })
-            dispatch(action);
-            navigation.navigate('Bank')
         }
+        fetchStores();
     }
     return (
         <View style={{ marginTop: 60 }}>
@@ -492,18 +504,23 @@ export default function Post({ navigation }) {
                             </View>
                         </View>
                         <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', borderLeftWidth: 1, borderLeftColor: '#3F72AF', paddingLeft: 5 }}>
-                            <TakePhoto handleGetImg={handleGetImg} />
+                            <TakePhoto handleGetImg={handleGetImg} width={100} height={100} />
                         </View>
                     </View>
 
                 </View>
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <Button
+                        title="Tiếp Theo"
+                        buttonStyle={styles.button}
+                        onPress={handleSubmit(onSubmit)}
+                    />
                     <View
                         style={
                             {
                                 flexDirection: 'row',
                                 alignItems: 'center',
-                                paddingTop: 20
+                                paddingTop: 15
                             }
                         }
                     >
@@ -514,11 +531,6 @@ export default function Post({ navigation }) {
                             onPress={() => navigation.navigate('Login')}
                         />
                     </View>
-                    <Button
-                        title="Tiếp Theo"
-                        buttonStyle={styles.button}
-                        onPress={handleSubmit(onSubmit)}
-                    />
                 </View>
             </ScrollView>
         </View >
@@ -567,6 +579,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         borderRadius: 10,
         width: 150,
-        height: 40
+        height: 40,
+        marginTop: 30,
     }
 });

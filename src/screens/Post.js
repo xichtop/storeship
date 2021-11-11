@@ -18,6 +18,8 @@ import deliveryAPI from '../api/deliveryAPI';
 import { showMessage } from "react-native-flash-message";
 import TakePhoto from '../components/TakePhoto';
 import { useSelector } from 'react-redux';
+import SearchableDropdown from 'react-native-searchable-dropdown';
+// import PickerCascader  from 'react-native-picker-cascader';
 
 const schema = yup.object().shape({
     name: yup.string().required('Tên người nhận không được để trống'),
@@ -27,7 +29,8 @@ const schema = yup.object().shape({
     district: yup.string().required('Vui lòng chọn quận/huyện'),
     ward: yup.string().required('Vui lòng chọn phường'),
     goodName: yup.string().required('Tên hàng hóa không được để trống'),
-    goodWeight: yup.string().required('Cân nặng hàng hóa không được để trống'),
+    goodWeight: yup.string().required('Cân nặng không được để trống'),
+    goodSize: yup.string().required('kích thước không được để trống'),
     goodType: yup.string().required('Vui lòng chọn loại hàng hóa'),
     shipType: yup.string().required('Vui lòng chọn loại giao hàng'),
     cod: yup.string().required('Tiền thu hộ không được để trống'),
@@ -56,7 +59,7 @@ export default function Post({ navigation }) {
 
     const [enableWard, setEnableWard] = useState('');
 
-    const [img, setImg] = useState('https://static.thenounproject.com/png/396915-200.png');
+    const [img, setImg] = useState('https://us.123rf.com/450wm/dirkercken/dirkercken1403/dirkercken140300029/26322661-photos-bouton-image-et-la-photo-galerie-ic%C3%B4ne.jpg?ver=6');
 
     useEffect(() => {
         const fetchListProvinces = async () => {
@@ -65,6 +68,8 @@ export default function Post({ navigation }) {
                 const provincess = await provinceAPI.index();
                 provincess.forEach(province => {
                     temp.push({
+                        // name: province.ProvinceName,
+                        // id: province.ProvinceCode,
                         label: province.ProvinceName,
                         value: province.ProvinceCode,
                         key: province.ProvinceCode,
@@ -119,7 +124,6 @@ export default function Post({ navigation }) {
     }, [enableDistrict])
 
     const handleGetImg = (image) => {
-        console.log(image);
         setImg(image);
     }
 
@@ -139,6 +143,7 @@ export default function Post({ navigation }) {
                 ShipType: data.shipType,
                 GoodName: data.goodName,
                 GoodWeight: data.goodWeight,
+                GoodSize: data.goodSize,
                 GoodType: data.goodType,
             }
             var result = null;
@@ -178,7 +183,7 @@ export default function Post({ navigation }) {
             }
         }
 
-        if (img === 'https://static.thenounproject.com/png/396915-200.png') {
+        if (img === 'https://us.123rf.com/450wm/dirkercken/dirkercken1403/dirkercken140300029/26322661-photos-bouton-image-et-la-photo-galerie-ic%C3%B4ne.jpg?ver=6') {
             Alert.alert('Vui lòng tải ảnh lên');
         }
         else if (store.Status === 'UnVertify') {
@@ -191,10 +196,17 @@ export default function Post({ navigation }) {
         }
     }
     return (
-        <View>
-            <ScrollView>
-                <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }} keyboardVerticalOffset={30}>
-                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={200}
+            style={{ flex: 1 }}
+        >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={{
+                    flex: 1,
+                    justifyContent: "space-around",
+                }}>
+                    <View>
                         <View style={styles.container}>
                             {/* <Text style={styles.title}>Tạo Đơn Hàng</Text> */}
                             <View style={{ width: '100%', alignItems: 'flex-start', paddingLeft: 20, marginVertical: 10 }}>
@@ -315,6 +327,52 @@ export default function Post({ navigation }) {
                                                     );
                                                 }}
                                             />
+                                            // <SearchableDropdown
+                                            //     onItemSelect={(item) => {
+                                            //         // onChange(item.id);
+                                            //         onChange(item.id);
+                                            //         setEnableDistrict(item.id);
+                                            //     }}
+                                            //     selectedItems={[{
+                                            //         id: value
+                                            //     }]}
+                                            //     containerStyle={{ width: '100%' }}
+                                            //     itemStyle={{
+                                            //         padding: 10,
+                                            //         marginTop: 2,
+                                            //         backgroundColor: '#F9F7F7',
+                                            //         borderColor: '#3F72AF',
+                                            //         borderWidth: 1,
+                                            //         borderRadius: 5,
+                                            //     }}
+                                            //     itemTextStyle={{ color: '#222' }}
+                                            //     itemsContainerStyle={{ maxHeiheght: 100,  }}
+                                            //     items={provinces}
+                                            //     defaultIndex={0}
+                                            //     // resetValue={true}
+                                            //     textInputProps={
+                                            //         {
+                                            //             placeholder: "Chọn tỉnh, thành phố",
+                                            //             underlineColorAndroid: "transparent",
+                                            //             style: {
+                                            //                 paddingHorizontal: 12,
+                                            //                 paddingVertical: 6,
+                                            //                 borderWidth: 1,
+                                            //                 borderColor: '#3F72AF',
+                                            //                 borderRadius: 5,
+                                            //                 fontSize: 15,
+                                            //             },
+                                            //             // onTextChange: text => alert(text)
+                                            //         }
+                                            //     }
+                                            //     listProps={
+                                            //         {
+                                            //             nestedScrollEnabled: true,
+                                            //             initialNumToRender: 5, 
+                                            //             numColumns: 3
+                                            //         }
+                                            //     }
+                                            // />
                                         )}
                                         name="province"
                                         defaultValue=""
@@ -438,31 +496,106 @@ export default function Post({ navigation }) {
                                         name="goodName"
                                         defaultValue=""
                                     />
-                                    <Controller
-                                        control={control}
-                                        render={({ field: { onChange, onBlur, value } }) => (
-                                            <Input
-                                                inputStyle={{ fontSize: 15 }}
-                                                inputContainerStyle={styles.input}
-                                                placeholder='Nhập cân nặng hàng hóa'
-                                                leftIcon={
-                                                    <Icon
-                                                        name='barbell'
-                                                        size={18}
-                                                        color='#3F72AF'
-                                                    />
-                                                }
-                                                labelStyle={{ color: '#3F72AF', fontSize: 10 }}
-                                                onBlur={onBlur}
-                                                onChangeText={onChange}
-                                                value={value}
-                                                keyboardType='numeric'
-                                                errorMessage={errors.goodWeight ? errors.goodWeight.message : ''}
-                                            />
-                                        )}
-                                        name="goodWeight"
-                                        defaultValue=""
-                                    />
+                                    <View style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        marginHorizontal: 10
+                                    }}>
+                                        <Controller
+                                            control={control}
+                                            render={({ field: { onChange, onBlur, value } }) => (
+                                                <RNPickerSelect
+                                                    placeholder={{ label: 'Chọn cân nặng hàng hóa', value: '' }}
+                                                    onValueChange={onChange}
+                                                    value={value}
+                                                    style={{
+                                                        inputIOS: { ...styles.select },
+                                                        iconContainer: {
+                                                            top: 6,
+                                                            right: 8,
+                                                        },
+                                                        viewContainer: {
+                                                            flex: 1,
+                                                        },
+                                                        placeholder: {
+                                                            color: 'gray',
+                                                            fontSize: 15,
+                                                        },
+                                                    }}
+                                                    items={[
+                                                        { label: 'Từ 0 đến 1 : S', value: 'S', key: 'S' },
+                                                        { label: 'Từ 1 đến 3 : M', value: 'M', key: 'M' },
+                                                        { label: 'Từ 3 đến 5 : L', value: 'L', key: 'L' },
+                                                        { label: 'Lớn hơn 5 : XL', value: 'XL', key: 'XL' },
+                                                    ]}
+                                                    Icon={() => {
+                                                        return (
+                                                            <Icon
+                                                                name='caret-down'
+                                                                size={18}
+                                                                color='#3F72AF'
+                                                            />
+                                                        );
+                                                    }}
+                                                />
+                                            )}
+                                            name="goodWeight"
+                                            defaultValue=""
+                                        />
+                                    </View>
+                                    <View style={{ width: '100%', alignItems: 'flex-start', paddingTop: 6, paddingLeft: 14 }}>
+                                        <Text style={{ color: 'red', fontSize: 12, }}>{errors.goodWeight ? errors.goodWeight.message : ''}</Text>
+                                    </View>
+                                    <View style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        marginHorizontal: 10
+                                    }}>
+                                        <Controller
+                                            control={control}
+                                            render={({ field: { onChange, onBlur, value } }) => (
+                                                <RNPickerSelect
+                                                    placeholder={{ label: 'Chọn kích cỡ hàng hóa', value: '' }}
+                                                    onValueChange={onChange}
+                                                    value={value}
+                                                    style={{
+                                                        inputIOS: { ...styles.select },
+                                                        iconContainer: {
+                                                            top: 6,
+                                                            right: 8,
+                                                        },
+                                                        viewContainer: {
+                                                            flex: 1,
+                                                        },
+                                                        placeholder: {
+                                                            color: 'gray',
+                                                            fontSize: 15,
+                                                        },
+                                                    }}
+                                                    items={[
+                                                        { label: '0 - 30*30*30 : S', value: 'S', key: 'KS' },
+                                                        { label: '30*30*30 - 50*50*50', value: 'M', key: 'KM' },
+                                                        { label: '50*50*50 - 70*70*70 : L', value: 'L', key: 'KL' },
+                                                        { label: 'Lớn hơn 70*70*70 : XL', value: 'XL', key: 'KXL' },
+                                                    ]}
+                                                    Icon={() => {
+                                                        return (
+                                                            <Icon
+                                                                name='caret-down'
+                                                                size={18}
+                                                                color='#3F72AF'
+                                                            />
+                                                        );
+                                                    }}
+                                                />
+                                            )}
+                                            name="goodSize"
+                                            defaultValue=""
+                                        />
+                                    </View>
+                                    <View style={{ width: '100%', alignItems: 'flex-start', paddingTop: 6, paddingLeft: 14 }}>
+                                        <Text style={{ color: 'red', fontSize: 12, }}>{errors.goodSize ? errors.goodSize.message : ''}</Text>
+                                    </View>
                                     <View style={{
                                         flexDirection: 'row',
                                         alignItems: 'center',
@@ -514,7 +647,7 @@ export default function Post({ navigation }) {
                                     </View>
                                 </View>
                                 <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', borderLeftWidth: 1, borderLeftColor: '#3F72AF' }}>
-                                    <TakePhoto handleGetImg={handleGetImg} />
+                                    <TakePhoto handleGetImg={handleGetImg} width = {100} height = {100} />
                                 </View>
                             </View>
                             <View style={{ width: '100%', alignItems: 'flex-start', paddingLeft: 20, marginBottom: 10 }}>
@@ -569,31 +702,34 @@ export default function Post({ navigation }) {
                                 <View style={{ width: '100%', alignItems: 'flex-start', paddingTop: 6, paddingLeft: 14 }}>
                                     <Text style={{ color: 'red', fontSize: 12, }}>{errors.shipType ? errors.shipType.message : ''}</Text>
                                 </View>
-                                <Controller
-                                    control={control}
-                                    render={({ field: { onChange, onBlur, value } }) => (
-                                        <Input
-                                            inputStyle={{ fontSize: 15 }}
-                                            inputContainerStyle={styles.input}
-                                            placeholder='Nhập tiền thu hộ'
-                                            leftIcon={
-                                                <Icon
-                                                    name='wallet'
-                                                    size={18}
-                                                    color='#3F72AF'
-                                                />
-                                            }
-                                            labelStyle={{ color: '#3F72AF', fontSize: 10 }}
-                                            onBlur={onBlur}
-                                            onChangeText={onChange}
-                                            value={value}
-                                            keyboardType='numeric'
-                                            errorMessage={errors.cod ? errors.cod.message : ''}
-                                        />
-                                    )}
-                                    name="cod"
-                                    defaultValue=""
-                                />
+                                <View style={{ width: 300 }}>
+                                    <Controller
+                                        control={control}
+                                        render={({ field: { onChange, onBlur, value } }) => (
+                                            <Input
+                                                inputStyle={{ fontSize: 15 }}
+                                                inputContainerStyle={styles.input}
+                                                placeholder='Nhập tiền thu hộ'
+                                                leftIcon={
+                                                    <Icon
+                                                        name='wallet'
+                                                        size={18}
+                                                        color='#3F72AF'
+                                                    />
+                                                }
+                                                labelStyle={{ color: '#3F72AF', fontSize: 10 }}
+                                                onBlur={onBlur}
+                                                onChangeText={onChange}
+                                                value={value}
+                                                keyboardType='numeric'
+                                                errorMessage={errors.cod ? errors.cod.message : ''}
+                                            />
+                                        )}
+                                        name="cod"
+                                        defaultValue=""
+                                    />
+                                </View>
+
                             </View>
                             <Button
                                 title="Tạo đơn hàng"
@@ -602,10 +738,10 @@ export default function Post({ navigation }) {
                                 loading={isLoading}
                             />
                         </View>
-                    </TouchableWithoutFeedback>
-                </KeyboardAvoidingView>
-            </ScrollView>
-        </View>
+                    </View>
+                </View>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     );
 }
 

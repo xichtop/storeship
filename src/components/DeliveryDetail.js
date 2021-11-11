@@ -154,7 +154,10 @@ export default function DeliveryDetail({ route, navigation }) {
                             <Text style={styles.secondText}> {delivery.GoodType}</Text>
                         </Text>
                         <Text style={styles.firstText}>Cân nặng:
-                            <Text style={styles.secondText}> {delivery.GoodWeight} Kg</Text>
+                            <Text style={styles.secondText}> {delivery.GoodWeight}</Text>
+                        </Text>
+                        <Text style={styles.firstText}>Kích thước:
+                            <Text style={styles.secondText}> {delivery.Size}</Text>
                         </Text>
                     </View>
                 </View>
