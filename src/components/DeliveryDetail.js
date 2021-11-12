@@ -200,8 +200,7 @@ const styles = StyleSheet.create({
     },
     secondText: {
         fontSize: 20,
-        color: '#112D4E',
-        fontWeight: 'bold'
+        color: '#3F72AF',
     },
     photo: {
         height: 100,
