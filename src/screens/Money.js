@@ -31,6 +31,8 @@ export default function Money() {
 
     const [lastDate, setLastDate] = useState(addDays(new Date(), 1));
 
+    const [loading, setLoading] = useState(false);
+
     const onFirstDateChange = (event, selectedDate) => {
         const currentDate = selectedDate || firstDate;
         setFirstDate(currentDate);
@@ -75,7 +77,11 @@ export default function Money() {
                 console.log('Fetch Statistic failed', error);
             }
         }
-        fetchStatistic();
+        setLoading(true);
+        setTimeout(() => {
+            fetchStatistic();
+            setLoading(false);
+        }, 1000)
     }
 
     useEffect(() => {
@@ -147,6 +153,7 @@ export default function Money() {
                     onPress={hanldeFilter}
                     titleStyle={{ fontSize: 12 }}
                     buttonStyle={{ width: 50, borderRadius: 6 }}
+                    loading={loading}
                 />
             </View>
             <View style={styles.container}>

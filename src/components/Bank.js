@@ -49,12 +49,14 @@ export default function Bank({ navigation }) {
         resolver: yupResolver(schema),
         reValidateMode: 'onChange'
     });
-    
+
     const dispatch = useDispatch();
-    
+
     const [isLoading, setIsLoading] = useState(false);
 
     const [banks, setBanks] = useState([{ label: 'Agribank', value: 'Agribank', key: 'agribank' }]);
+
+    const [selectedBanks, setSelectedBanks] = useState([]);
 
     useEffect(() => {
         const fetchBanks = async () => {
@@ -63,9 +65,8 @@ export default function Bank({ navigation }) {
                 var temps = [];
                 banks.data.forEach(bank => {
                     temps.push({
-                        value: bank.short_name,
-                        label: bank.name,
-                        key: bank.code
+                        id: bank.short_name,
+                        name:bank.short_name + ' - ' + bank.name,
                     })
                 })
                 setBanks(temps);
@@ -107,6 +108,86 @@ export default function Bank({ navigation }) {
                 <Text style={{ fontSize: 15, color: '#112D4E' }}>Thông tin ngân hàng</Text>
             </View>
             <View style={styles.controller}>
+                <View style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginHorizontal: 10
+                }}>
+                    <Controller
+                        control={control}
+                        render={({ field: { onChange, onBlur, value } }) => (
+                            <SearchableDropdown
+                                onItemSelect={(item) => {
+                                    onChange(item.id);
+                                    setSelectedBanks(item);
+                                }}
+                                selectedItems={selectedBanks}
+                                containerStyle={{ width: '100%' }}
+                                itemStyle={{
+                                    padding: 10,
+                                    marginTop: 2,
+                                    backgroundColor: '#F9F7F7',
+                                    borderColor: '#3F72AF',
+                                    borderWidth: 1,
+                                    borderRadius: 5,
+                                }}
+                                itemTextStyle={{ color: '#222' }}
+                                itemsContainerStyle={{ maxHeight: 300, }}
+                                items={banks}
+                                defaultIndex={0}
+                                textInputProps={
+                                    {
+                                        placeholder: "Chọn ngân hàng ...",
+                                        underlineColorAndroid: "transparent",
+                                        style: {
+                                            paddingHorizontal: 12,
+                                            paddingVertical: 6,
+                                            borderWidth: 1,
+                                            borderColor: '#3F72AF',
+                                            borderRadius: 5,
+                                            fontSize: 15,
+                                        },
+                                    }
+                                }
+                                listProps={
+                                    {
+                                        nestedScrollEnabled: true,
+                                    }
+                                }
+                            />
+                        )}
+                        name="bankname"
+                        defaultValue=""
+                    />
+                </View>
+                <View style={{ width: '100%', alignItems: 'flex-start', paddingTop: 6, paddingLeft: 14 }}>
+                    <Text style={{ color: 'red', fontSize: 12, }}>{errors.bankname ? errors.bankname.message : ''}</Text>
+                </View>
+
+                <Controller
+                    control={control}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <Input
+                            inputStyle={{ fontSize: 15 }}
+                            inputContainerStyle={styles.input}
+                            placeholder='Nhập chi nhánh ngân hàng'
+                            leftIcon={
+                                <Icon
+                                    name='color-filter'
+                                    size={18}
+                                    color='#3F72AF'
+                                />
+                            }
+                            labelStyle={{ color: '#3F72AF' }}
+                            onBlur={onBlur}
+                            onChangeText={onChange}
+                            value={value}
+                            errorMessage={errors.bankbranch ? errors.bankbranch.message : ''}
+                        />
+                    )}
+                    name="bankbranch"
+                    defaultValue=""
+                />
                 <Controller
                     control={control}
                     render={({ field: { onChange, onBlur, value } }) => (
@@ -156,130 +237,11 @@ export default function Bank({ navigation }) {
                     name="account"
                     defaultValue=""
                 />
-
-                <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginHorizontal: 10
-                }}>
-                    <Controller
-                        control={control}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <RNPickerSelect
-                                placeholder={{ label: 'Chọn ngân hàng', value: '' }}
-                                onValueChange={(value) => {
-                                    onChange(value);
-                                }}
-                                value={value}
-                                style={{
-                                    inputIOS: { ...styles.select },
-                                    iconContainer: {
-                                        top: 6,
-                                        right: 8,
-                                    },
-                                    viewContainer: {
-                                        width: '100%',
-                                    },
-                                    placeholder: {
-                                        color: 'gray',
-                                        fontSize: 15,
-                                    },
-                                }}
-                                items={banks}
-                                Icon={() => {
-                                    return (
-                                        <Icon
-                                            name='caret-down'
-                                            size={18}
-                                            color='#3F72AF'
-                                        />
-                                    );
-                                }}
-                            />
-                            // <SearchableDropdown
-                            //     onItemSelect={(item) => {
-                            //         // onChange(item.id);
-                            //         onChange(item.id);
-                            //         setEnableDistrict(item.id);
-                            //     }}
-                            //     selectedItems={[{
-                            //         id: value
-                            //     }]}
-                            //     containerStyle={{ width: '100%' }}
-                            //     itemStyle={{
-                            //         padding: 10,
-                            //         marginTop: 2,
-                            //         backgroundColor: '#F9F7F7',
-                            //         borderColor: '#3F72AF',
-                            //         borderWidth: 1,
-                            //         borderRadius: 5,
-                            //     }}
-                            //     itemTextStyle={{ color: '#222' }}
-                            //     itemsContainerStyle={{ maxHeiheght: 100,  }}
-                            //     items={provinces}
-                            //     defaultIndex={0}
-                            //     // resetValue={true}
-                            //     textInputProps={
-                            //         {
-                            //             placeholder: "Chọn tỉnh, thành phố",
-                            //             underlineColorAndroid: "transparent",
-                            //             style: {
-                            //                 paddingHorizontal: 12,
-                            //                 paddingVertical: 6,
-                            //                 borderWidth: 1,
-                            //                 borderColor: '#3F72AF',
-                            //                 borderRadius: 5,
-                            //                 fontSize: 15,
-                            //             },
-                            //             // onTextChange: text => alert(text)
-                            //         }
-                            //     }
-                            //     listProps={
-                            //         {
-                            //             nestedScrollEnabled: true,
-                            //             initialNumToRender: 5, 
-                            //             numColumns: 3
-                            //         }
-                            //     }
-                            // />
-                        )}
-                        name="bankname"
-                        defaultValue=""
-                    />
-                </View>
-                <View style={{ width: '100%', alignItems: 'flex-start', paddingTop: 6, paddingLeft: 14 }}>
-                    <Text style={{ color: 'red', fontSize: 12, }}>{errors.bankname ? errors.bankname.message : ''}</Text>
-                </View>
-
-                <Controller
-                    control={control}
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <Input
-                            inputStyle={{ fontSize: 15 }}
-                            inputContainerStyle={styles.input}
-                            placeholder='Nhập chi nhánh ngân hàng'
-                            leftIcon={
-                                <Icon
-                                    name='color-filter'
-                                    size={18}
-                                    color='#3F72AF'
-                                />
-                            }
-                            labelStyle={{ color: '#3F72AF' }}
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            value={value}
-                            errorMessage={errors.bankbranch ? errors.bankbranch.message : ''}
-                        />
-                    )}
-                    name="bankbranch"
-                    defaultValue=""
-                />
             </View>
-            <View style={{flexDirection: 'row'}}>
+            <View style={{ flexDirection: 'row' }}>
                 <Button
                     title="Quay lại"
-                    buttonStyle={{...styles.button, backgroundColor: 'green'}}
+                    buttonStyle={{ ...styles.button, backgroundColor: 'green' }}
                     onPress={() => navigation.goBack()}
                     loading={isLoading}
                 />

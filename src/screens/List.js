@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutAnimation, SafeAreaView, StyleSheet, View, Text, RefreshControl, StatusBar } from 'react-native';
-import {
-    SwipeableFlatList,
-    SwipeableQuickActionButton,
-    SwipeableQuickActions,
-} from 'react-native-swipe-list';
+import { SafeAreaView, StyleSheet, View, Text, RefreshControl, StatusBar, FlatList, TouchableOpacity } from 'react-native';
 import { Button, Tooltip } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import deliveryAPI from '../api/deliveryAPI';
@@ -12,6 +7,7 @@ import { SearchBar } from 'react-native-elements';
 import { formatDistance, formatRelative, addHours } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { useSelector } from 'react-redux'
+import numberWithCommas from '../utils/numberWithCommas'
 
 export default function List({ navigation }) {
 
@@ -198,78 +194,76 @@ export default function List({ navigation }) {
                 containerStyle={{ backgroundColor: '#F9F7F7', height: 48 }}
                 inputContainerStyle={{ backgroundColor: '#DBE2EF', height: 24 }}
             />
-            <SwipeableFlatList
-                data={dataSearch}
-                renderItem={({ item }) =>
-                    <View
-                        style={{
-                            width: '100%',
-                            backgroundColor: '#F9F7F7',
-                            borderColor: '#3F72AF',
-                            borderWidth: 1,
-                            marginBottom: 10,
-                            padding: 10
-                        }}
-                    >
-                        <Text style={{ fontSize: 20, fontWeight: "bold", color: '#112D4E' }}>ĐH{item.DeliveryId}/{item.ShipType === "Giao hàng nhanh" ? "GHN" : "GHTC"} : {item.RecieverName}</Text>
-                        <Text style={{ fontSize: 16, color: '#3F72AF' }}>Địa chỉ: {item.AddressDetail}, {item.WardName}, {item.DistrictName}, {item.ProvinceName}</Text>
-                        <Text style={{ fontSize: 16, color: '#3F72AF' }}>Số điện thoại: {item.RecieverPhone}</Text>
-                        <Text style={{ fontSize: 16, color: '#3F72AF' }}>COD: {item.COD}đ</Text>
-                        <Tooltip
-                            popover={<Text style={{ fontSize: 16, color: '#F9F7F7' }}>{formatRelative(addHours(new Date(item.OrderDate), -7), new Date(), { locale: vi })}</Text>}
-                            width={300}
-                            backgroundColor='#3F72AF'
-                        >
-                            <Text style={{ fontSize: 16 }}>{formatDistance(addHours(new Date(item.OrderDate), -7), new Date(), { locale: vi })}</Text>
-                        </Tooltip>
-                        {/* {item.Status === 'Ordered' ?
-                            <View style={{ alignItems: 'center', paddingTop: 20 }}>
-                                <Button title='Hủy Đơn Hàng'
-                                    onPress={handleCancel} />
-                            </View>
-                            :
-                            <View></View>
-                        } */}
-                    </View>
-                }
-                keyExtractor={item => item.DeliveryId.toString()}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                    />
-                }
-                // renderLeftActions={({ item }) => (
-                //     <SwipeableQuickActions>
-                //     </SwipeableQuickActions>
-                // )}
-                renderRightActions={({ item }) => (
-                    <SwipeableQuickActions>
-                        <SwipeableQuickActionButton
-                            onPress={() => {
-                                LayoutAnimation.configureNext(
-                                    LayoutAnimation.Presets.easeInEaseOut,
-                                );
-                                // setData(data.filter(value => value.id !== item.id));
-                                navigation.navigate('Detail', {
-                                    deliveryId: item.DeliveryId,
-                                })
+            <View style={{ alignItems: 'center', width: '100%', paddingTop: 10}}>
+                <FlatList
+                    data={dataSearch}
+                    renderItem={({ item }) =>
+                        <View
+                            style={{
+                                width: '96%',
+                                backgroundColor: 'white',
+                                borderRadius: 15,
+                                marginBottom: 10,
+                                paddingHorizontal: 20,
+                                alignSelf: 'center'
                             }}
-                            text="Chi tiết"
-                            textStyle={{ fontWeight: 'bold', color: '#F9F7F7' }}
-                            style={{ backgroundColor: '#3F72AF', justifyContent: 'center', width: 120, height: '94%', }}
+                        >
+                            <View style={{ paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Text style={{ color: 'gray', fontSize: 16 }}>{item.ShipType === "Giao hàng nhanh" ? "GHN" : "GHTC"} - ĐH{item.DeliveryId}</Text>
+                                <View style={{
+                                    backgroundColor: item.ShipType === "Giao hàng nhanh" ? "#1C7947" : "#112D4E",
+                                    borderRadius: 15, paddingHorizontal: 10, paddingVertical: 5
+                                }}>
+                                    <Text style={{ color: '#F9F7F7', fontSize: 14 }}>{item.ShipType}</Text>
+                                </View>
+                            </View>
+                            <Text style={{ fontSize: 18, fontWeight: "bold", color: '#112D4E' }}>{item.RecieverName} | {item.RecieverPhone}</Text>
+                            <View style={{ paddingVertical: 6, flexDirection: 'row', alignItems: 'center' }}>
+                                <Icon name="golf" size={20} color='#D98C00' />
+                                <Text style={{ fontSize: 14, color: 'gray', paddingLeft: 10 }}>{item.AddressDetail}, {item.WardName}, {item.DistrictName}, {item.ProvinceName}</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Icon name="timer" size={20} color='green' />
+                                <Tooltip
+                                    popover={<Text style={{ fontSize: 16, color: '#F9F7F7' }}>{formatRelative(addHours(new Date(item.OrderDate), -7), new Date(), { locale: vi })}</Text>}
+                                    width={300}
+                                    backgroundColor='#3F72AF'
+                                >
+                                    <Text style={{ fontSize: 14, paddingLeft: 10 }}>{formatDistance(addHours(new Date(item.OrderDate), -7), new Date(), { locale: vi })} trước</Text>
+                                </Tooltip>
+                            </View>
+                            <View style={{ paddingVertical: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <Text style={{ color: 'gray', fontSize: 16 }}>Thu hộ COD</Text>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Text style={{ fontSize: 16, color: '#112D4E', fontWeight: 'bold', paddingRight: 10 }}>{numberWithCommas(parseInt(item.COD))} đ</Text>
+                                    <TouchableOpacity
+                                        onPress={() => navigation.navigate('Detail', {
+                                            deliveryId: item.DeliveryId
+                                        })}
+                                    >
+                                        <Icon name="chevron-forward" size={20} color='#112D4E' />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    }
+                    keyExtractor={item => item.DeliveryId.toString()}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
                         />
-                    </SwipeableQuickActions>
-                )}
-            />
+                    }
+                />
+            </View>
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        height: '87%',
-        justifyContent: 'center',
+        height: '74%',
+        backgroundColor: '#E8EAE6',
     },
     select: {
         fontSize: 20,

@@ -27,6 +27,8 @@ export default function Home() {
 
     const [data, setData] = useState(DATA);
 
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         const getListStatistic = async () => {
             const item = {
@@ -37,12 +39,6 @@ export default function Home() {
             try {
                 const temp = await deliveryAPI.statistic(item, token);
                 let datas = [];
-                // temp.forEach((item, index) => {
-                //     datas.push({
-                //         ...DATA[index],
-                //         mount: item.Mount,
-                //     })
-                // })
                 DATA.forEach((item) => {
                     const indexFind = temp.findIndex(i => i.Status === item.name);
                     if (indexFind !== -1) {
@@ -110,7 +106,11 @@ export default function Home() {
                 console.log("Failed to fetch statistic list: ", error);
             }
         }
-        getListStatistic();
+        setLoading(true);
+        setTimeout(() => {
+            getListStatistic();
+            setLoading(false);
+        }, 1000)
     }
 
     return (
@@ -146,6 +146,7 @@ export default function Home() {
                     onPress={hanldeFilter}
                     titleStyle={{ fontSize: 12 }}
                     buttonStyle={{ width: 50, borderRadius: 6 }}
+                    loading={loading} 
                 />
             </View>
             <View style={{ flexDirection: 'row', marginVertical: 10 }}>

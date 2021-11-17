@@ -7,8 +7,11 @@ import { showMessage, hideMessage } from "react-native-flash-message";
 import { formatDistance, formatRelative, addHours } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { useSelector } from 'react-redux';
+import Icon from 'react-native-vector-icons/Ionicons';
+import numberWithCommas from '../utils/numberWithCommas'
 import StepIndicator from 'react-native-step-indicator';
 const labels = ["Lấy hàng", "Đang giao", "Đã giao", "Đã hủy"];
+
 const customStyles = {
     stepIndicatorSize: 30,
     currentStepIndicatorSize: 35,
@@ -107,58 +110,60 @@ export default function DeliveryDetail({ route, navigation }) {
     }
 
     return (
-        <View>
+        <View style={styles.container}>
             <View style={styles.box}>
                 <Text style={styles.title}>Thông tin đơn hàng</Text>
-                <Text style={styles.firstText}>Mã đơn hàng:
-                        <Text style={styles.secondText}> ĐH{delivery.DeliveryId}/{delivery.ShipType === 'Giao hàng nhanh' ? 'GHN' : 'GHTC'}</Text>
-                </Text>
-                <Text style={styles.firstText}>Loại giao hàng:
-                        <Text style={styles.secondText}> {delivery.ShipType}</Text>
-                </Text>
-                <Text style={styles.firstText}>COD:
-                        <Text style={styles.secondText}> {delivery.COD}đ</Text>
-                </Text>
-                <Tooltip
-                    popover={<Text style={{ fontSize: 16, color: '#F9F7F7' }}>{formatRelative(addHours(new Date(delivery.OrderDate), -7), new Date(), { locale: vi })}</Text>}
-                    width={300}
-                    backgroundColor='#3F72AF'
-                >
-                    <Text style={{ fontSize: 16 }}>{formatDistance(addHours(new Date(delivery.OrderDate), -7), new Date(), { locale: vi })}</Text>
-                </Tooltip>
+                <Text style={{ fontSize: 20, fontWeight: "bold", color: '#112D4E', paddingVertical: 5 }}>{delivery.ShipType}</Text>
+                <Text style={{ color: 'gray', fontSize: 16 }}>{delivery.ShipType === "Giao hàng nhanh" ? "GHN" : "GHTC"} - ĐH{delivery.DeliveryId}</Text>
+                <View style={{ paddingVertical: 6, flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon name="wallet" size={20} color='#D98C00' />
+                    <Text style={{ fontSize: 14, paddingLeft: 6 }}>Thu hộ COD: {numberWithCommas(parseInt(delivery.COD))} đ</Text>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon name="timer" size={20} color='green' />
+                    <Tooltip
+                        popover={<Text style={{ fontSize: 16, color: '#F9F7F7' }}>{formatRelative(addHours(new Date(delivery.OrderDate), -7), new Date(), { locale: vi })}</Text>}
+                        width={300}
+                        backgroundColor='#3F72AF'
+                    >
+                        <Text style={{ fontSize: 14, paddingLeft: 6 }}>Ngày đặt hàng: {formatDistance(addHours(new Date(delivery.OrderDate), -7), new Date(), { locale: vi })} trước</Text>
+                    </Tooltip>
+                </View>
 
             </View>
             <View style={styles.box}>
                 <Text style={styles.title}>Thông tin người nhận</Text>
-                <Text style={styles.firstText}>Tên người nhận:
-                        <Text style={styles.secondText}> {delivery.RecieverName}</Text>
-                </Text>
-                <Text style={styles.firstText}>Số điện thoại:
-                        <Text style={styles.secondText}> {delivery.RecieverPhone}</Text>
-                </Text>
-                <Text style={styles.firstText}>Địa chỉ:
-                        <Text style={styles.secondText}>{delivery.AddressDetail}, {delivery.WardName}, {delivery.DistrictName}, {delivery.ProvinceName}</Text>
-                </Text>
+                <Text style={{ fontSize: 20, fontWeight: "bold", color: '#112D4E', paddingVertical: 5 }}>{delivery.RecieverName}</Text>
+                <View style={{ paddingVertical: 6, flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon name="call" size={20} color='#D98C00' />
+                    <Text style={{ fontSize: 14, paddingLeft: 6 }}>Số điện thoại: {delivery.RecieverPhone}</Text>
+                </View>
+                <View style={{ paddingVertical: 6, flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon name="golf" size={20} color='green' />
+                    <Text style={{ fontSize: 14, paddingLeft: 6 }}>Địa chỉ: {delivery.AddressDetail}, {delivery.WardName},</Text>
+                </View>
+                <Text style={{ fontSize: 14, paddingLeft: 26, marginTop: -3 }}>{delivery.DistrictName}, {delivery.ProvinceName}</Text>
             </View>
             <View style={styles.box}>
                 <Text style={styles.title}>Thông tin hàng hóa</Text>
-                <View style={{ flexDirection: 'row' }}>
-                    <View style={{ alignItems: 'center', paddingBottom: 10 }}>
+                <Text style={{ fontSize: 20, fontWeight: "bold", color: '#112D4E', paddingBottom: 10 }}>{delivery.GoodName}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', }}>
+                    <View style={{ alignItems: 'center', borderWidth: 1, borderColor: '#112D4E', borderRadius: 10 }}>
                         <Image source={{ uri: `${delivery.Picture}` }} style={styles.photo} />
                     </View>
-                    <View style={{ paddingLeft: 10, justifyContent: 'space-between', paddingVertical: 5, }}>
-                        <Text style={styles.firstText}>Tên hàng:
-                            <Text style={styles.secondText}> {delivery.GoodName}</Text>
-                        </Text>
-                        <Text style={styles.firstText}>Loại hàng:
-                            <Text style={styles.secondText}> {delivery.GoodType}</Text>
-                        </Text>
-                        <Text style={styles.firstText}>Cân nặng:
-                            <Text style={styles.secondText}> {delivery.GoodWeight}</Text>
-                        </Text>
-                        <Text style={styles.firstText}>Kích thước:
-                            <Text style={styles.secondText}> {delivery.Size}</Text>
-                        </Text>
+                    <View style={{ paddingLeft: 10, justifyContent: 'space-between', }}>
+                        <View style={{ paddingVertical: 6, flexDirection: 'row', alignItems: 'center' }}>
+                            <Icon name="cube" size={20} color='#D98C00' />
+                            <Text style={{ fontSize: 14, paddingLeft: 6 }}>Loại hàng: {delivery.GoodType}</Text>
+                        </View>
+                        <View style={{ paddingVertical: 6, flexDirection: 'row', alignItems: 'center' }}>
+                            <Icon name="barbell-sharp" size={20} color='green' />
+                            <Text style={{ fontSize: 14, paddingLeft: 6 }}>Cân nặng: {delivery.GoodWeight}</Text>
+                        </View>
+                        <View style={{ paddingVertical: 6, flexDirection: 'row', alignItems: 'center' }}>
+                            <Icon name="expand-sharp" size={20} color='#FF577F' />
+                            <Text style={{ fontSize: 14, paddingLeft: 6 }}>Kích thước: {delivery.Size}</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -172,9 +177,10 @@ export default function DeliveryDetail({ route, navigation }) {
                 />
             </View>
             {delivery.Status === 'Ordered' ?
-                <View style={{ alignItems: 'center', paddingTop: 20 }}>
+                <View style={{ alignItems: 'center', paddingTop: 8 }}>
                     <Button title='Hủy Đơn Hàng'
-                        onPress={handleCancel} />
+                        onPress={handleCancel} 
+                        buttonStyle={{backgroundColor: '#112D4E', borderRadius: 10}}/>
                 </View>
                 :
                 <View></View>
@@ -184,28 +190,29 @@ export default function DeliveryDetail({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#E8EAE6',
+        height: '90%',
+        alignItems: 'center',
+        paddingTop: 5
+    },
     box: {
-        borderBottomWidth: 1,
-        borderBottomColor: '#3F72AF',
+        borderRadius: 15,
         paddingBottom: 10,
-        paddingLeft: 10
+        paddingLeft: 10,
+        backgroundColor: 'white',
+        width: '92%',
+        marginVertical: 3,
     },
     title: {
-        paddingVertical: 10,
+        paddingVertical: 6,
         fontSize: 18,
-        color: '#3F72AF'
-    },
-    firstText: {
-        fontSize: 20,
-    },
-    secondText: {
-        fontSize: 20,
-        color: '#3F72AF',
+        color: '#112D4E',
     },
     photo: {
         height: 100,
         width: 100,
         resizeMode: 'contain',
-        borderRadius: 5
+        borderRadius: 10
     }
 })
