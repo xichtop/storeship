@@ -323,9 +323,6 @@ export default function Post({ navigation }) {
                                     itemStyle={{
                                         padding: 10,
                                         marginTop: 2,
-                                        // position: 'absolute',
-                                        // top: 100,
-                                        // left: 0,
                                         backgroundColor: '#F9F7F7',
                                         borderColor: '#3F72AF',
                                         borderWidth: 1,

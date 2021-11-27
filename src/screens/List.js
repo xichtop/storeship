@@ -254,6 +254,14 @@ export default function List({ navigation }) {
                             onRefresh={onRefresh}
                         />
                     }
+                    ListEmptyComponent={
+                        <View style={{ justifyContent: 'center', alignItems: 'center', paddingTop: 200 }}>
+                            <Text style={{ paddingVertical: 10 }}>Hiện không có đơn hàng nào!!!</Text>
+                            <Button title="Thêm đơn hàng"
+                                onPress={() => navigation.navigate('Post')}
+                                buttonStyle={{ backgroundColor: '#112D4E', borderRadius: 10, marginBottom: 10 }} />
+                        </View>
+                    }
                 />
             </View>
         </SafeAreaView>
