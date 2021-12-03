@@ -189,8 +189,29 @@ export default function Post({ navigation }) {
             navigation.navigate('Profile');
         }
         else {
-            setIsLoading(true);
-            fetchAddOrder();
+            Alert.alert(
+                "Tạo Đơn Hàng",
+                "Bạn có chắc chắn muốn tạo đơn hàng này không?",
+                [
+                    {
+                        text: "Không",
+                        onPress: () => { },
+                        style: "destructive",
+                    },
+                    {
+                        text: "Có",
+                        onPress: () => {
+                            setIsLoading(true);
+                            fetchAddOrder();
+                        },
+                        style: "cancel",
+                    },
+                ],
+                {
+                    cancelable: true,
+                    onDismiss: () => {}
+                }
+            );
         }
     }
     return (
@@ -274,7 +295,7 @@ export default function Post({ navigation }) {
                 />
 
             </View>
-            <View style={{ width: '100%', alignItems: 'flex-start', paddingLeft: 20, marginBottom: 5}}>
+            <View style={{ width: '100%', alignItems: 'flex-start', paddingLeft: 20, marginBottom: 5 }}>
                 <Text style={{ fontSize: 15, color: '#3F72AF' }}>Thông tin người nhận</Text>
             </View>
             <View style={styles.controller}>
@@ -697,8 +718,8 @@ export default function Post({ navigation }) {
                         <Text style={{ color: 'red', fontSize: 12, }}>{errors.goodType ? errors.goodType.message : ''}</Text>
                     </View>
                 </View>
-                <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center',alignItems: 'center', borderLeftWidth: 1, borderLeftColor: '#3F72AF' }}>
-                    <Text style={{paddingBottom: 5, color: 'gray'}}>Hình ảnh</Text>
+                <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', borderLeftWidth: 1, borderLeftColor: '#3F72AF' }}>
+                    <Text style={{ paddingBottom: 5, color: 'gray' }}>Hình ảnh</Text>
                     <TakePhoto handleGetImg={handleGetImg} width={100} height={100} />
                 </View>
             </View>
