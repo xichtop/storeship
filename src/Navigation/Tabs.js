@@ -8,15 +8,14 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import Home from '../screens/Home'
 import Money from '../screens/Money'
 import Profile from '../screens/Profile'
-import List from '../screens/List'
+import OrderScreen from '../screens/OrderScreen'
 import Post from '../screens/Post'
 import Login from '../components/Login'
 import Register from '../components/Register'
 import Bank from '../components/Bank'
 import Identity from '../components/Identity'
-import DeliveryDetail from '../components/DeliveryDetail'
 
-const ListStack = createNativeStackNavigator();
+
 
 const config = {
     animation: 'spring',
@@ -29,30 +28,6 @@ const config = {
         restSpeedThreshold: 0.01,
     },
 };
-
-const ListScreen = () => {
-    return (
-        <ListStack.Navigator
-            screenOptions={{
-                headerStyle: {
-                    backgroundColor: '#112D4E',
-                },
-                headerTintColor: '#F9F7F7',
-                headerTitleStyle: {
-                    fontWeight: 'bold',
-                },
-
-                //animations 
-                transitionSpec: {
-                    open: config,
-                    close: config,
-                },
-            }}>
-            <ListStack.Screen name='ListIndex' component={List} options={{ title: 'Danh Sách Đơn Hàng' }} />
-            <ListStack.Screen name='Detail' component={DeliveryDetail} options={{ title: 'Chi Tiết Đơn Hàng' }} />
-        </ListStack.Navigator>
-    )
-}
 
 const Tab = createBottomTabNavigator()
 
@@ -128,7 +103,7 @@ const Tabs = ({navigation}) => {
             })}
         >
             <Tab.Screen name='Index' component={Home} options={{ tabBarLabel: 'Trang Chủ', title: 'Trang Chủ' }} />
-            <Tab.Screen name='List' component={ListScreen} options={{ tabBarLabel: 'Đơn Hàng', headerShown: false }} />
+            <Tab.Screen name='List' component={OrderScreen} options={{ tabBarLabel: 'Đơn Hàng', title: 'Đơn Hàng' }} />
             <Tab.Screen name='Post' component={Post} options={{ tabBarLabel: 'Tạo Đơn Hàng', title: 'Tạo Đơn Hàng' }} />
             <Tab.Screen name='Money' component={Money} options={{ tabBarLabel: 'Dòng Tiền', title: 'Dòng Tiền' }} />
             <Tab.Screen name='Profile' component={Profile} options={{

@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import numberWithCommas from '../utils/numberWithCommas'
 import StepIndicator from 'react-native-step-indicator';
-const labels = ["Lấy hàng", "Đang giao", "Đã giao", "Đã hủy"];
+const labels = ["Lấy hàng", "Đang giao", "Đã giao", "Đã hủy", "Đang trả", "Đã trả"];
 
 const customStyles = {
     stepIndicatorSize: 30,
@@ -59,6 +59,8 @@ export default function DeliveryDetail({ route, navigation }) {
                 else if (temp.Status === 'Delivering') setStep(1);
                 else if (temp.Status === 'Delivered') setStep(2);
                 else if (temp.Status === 'Canceled') setStep(3);
+                else if (temp.Status === 'Returning') setStep(4);
+                else if (temp.Status === 'Returned') setStep(5);
             } catch (error) {
                 console.log("Failed to fetch delivery: ", error);
             }
@@ -152,15 +154,15 @@ export default function DeliveryDetail({ route, navigation }) {
                         <Image source={{ uri: `${delivery.Picture}` }} style={styles.photo} />
                     </View>
                     <View style={{ paddingLeft: 10, justifyContent: 'space-between', }}>
-                        <View style={{ paddingVertical: 6, flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={{ paddingVertical: 3, flexDirection: 'row', alignItems: 'center' }}>
                             <Icon name="cube" size={20} color='#D98C00' />
                             <Text style={{ fontSize: 14, paddingLeft: 6 }}>Loại hàng: {delivery.GoodType}</Text>
                         </View>
-                        <View style={{ paddingVertical: 6, flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={{ paddingVertical: 3, flexDirection: 'row', alignItems: 'center' }}>
                             <Icon name="barbell-sharp" size={20} color='green' />
                             <Text style={{ fontSize: 14, paddingLeft: 6 }}>Cân nặng: {delivery.GoodWeight}</Text>
                         </View>
-                        <View style={{ paddingVertical: 6, flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={{ paddingVertical: 3, flexDirection: 'row', alignItems: 'center' }}>
                             <Icon name="expand-sharp" size={20} color='#FF577F' />
                             <Text style={{ fontSize: 14, paddingLeft: 6 }}>Kích thước: {delivery.Size}</Text>
                         </View>
@@ -171,7 +173,7 @@ export default function DeliveryDetail({ route, navigation }) {
                 <Text style={styles.title}>Trạng thái đơn hàng</Text>
                 <StepIndicator
                     customStyles={customStyles}
-                    stepCount={4}
+                    stepCount={6}
                     currentPosition={step}
                     labels={labels}
                 />
@@ -210,8 +212,8 @@ const styles = StyleSheet.create({
         color: '#112D4E',
     },
     photo: {
-        height: 100,
-        width: 100,
+        height: 80,
+        width: 80,
         resizeMode: 'contain',
         borderRadius: 10
     }

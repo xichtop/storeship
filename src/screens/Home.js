@@ -13,6 +13,8 @@ const DATA = [
     { name: 'Delivering', mount: 200, color: '#6E7C7C', legendFontColor: '#6E7C7C', legendFontSize: 0 },
     { name: 'Delivered', mount: 10, color: '#92967D', legendFontColor: '#92967D', legendFontSize: 0 },
     { name: 'Canceled', mount: 10, color: '#C8C6A7', legendFontColor: '#C8C6A7', legendFontSize: 0 },
+    { name: 'Returning', mount: 10, color: '#CFDAC8', legendFontColor: '#CFDAC8', legendFontSize: 0 },
+    { name: 'Returned', mount: 10, color: '#9DAD7F', legendFontColor: '#9DAD7F', legendFontSize: 0 },
 ]
 
 export default function Home() {
@@ -81,12 +83,6 @@ export default function Home() {
             try {
                 const temp = await deliveryAPI.statistic(item, token);
                 let datas = [];
-                // temp.forEach((item, index) => {
-                //     datas.push({
-                //         ...DATA[index],
-                //         mount: item.Mount,
-                //     })
-                // })
                 DATA.forEach((item) => {
                     const indexFind = temp.findIndex(i => i.Status === item.name);
                     if (indexFind !== -1) {
@@ -151,14 +147,14 @@ export default function Home() {
             </View>
             <View style={{ flexDirection: 'row', marginVertical: 10 }}>
                 <View style={styles.container}>
-                    <Ionicons name="rocket" size={50} color='#435560' />
+                    <Ionicons name="rocket" size={40} color='#435560' />
                     <View style={styles.box}>
                         <Text style={styles.title}>Lấy hàng</Text>
                         <Text style={styles.number}>{data[0].mount}</Text>
                     </View>
                 </View>
                 <View style={styles.container}>
-                    <Ionicons name="car-sport" size={50} color='#6E7C7C' />
+                    <Ionicons name="car-sport" size={40} color='#6E7C7C' />
                     <View style={styles.box}>
                         <Text style={styles.title}>Đang giao</Text>
                         <Text style={styles.number}>{data[1].mount}</Text>
@@ -167,17 +163,33 @@ export default function Home() {
             </View>
             <View style={{ flexDirection: 'row', marginVertical: 10 }}>
                 <View style={styles.container}>
-                    <Ionicons name="checkmark-circle" size={50} color='#92967D' />
+                    <Ionicons name="checkmark-done-circle" size={40} color='#92967D' />
                     <View style={styles.box}>
                         <Text style={styles.title}>Đã giao</Text>
                         <Text style={styles.number}>{data[2].mount}</Text>
                     </View>
                 </View>
                 <View style={styles.container}>
-                    <Ionicons name="backspace" size={50} color='#C8C6A7' />
+                    <Ionicons name="backspace" size={40} color='#C8C6A7' />
                     <View style={styles.box}>
                         <Text style={styles.title}>Đã hủy</Text>
                         <Text style={styles.number}>{data[3].mount}</Text>
+                    </View>
+                </View>
+            </View>
+            <View style={{ flexDirection: 'row', marginVertical: 10 }}>
+                <View style={styles.container}>
+                    <Ionicons name="play-back-circle" size={40} color='#CFDAC8' />
+                    <View style={styles.box}>
+                        <Text style={styles.title}>Đang trả</Text>
+                        <Text style={styles.number}>{data[4].mount}</Text>
+                    </View>
+                </View>
+                <View style={styles.container}>
+                    <Ionicons name="checkmark-circle" size={40} color='#9DAD7F' />
+                    <View style={styles.box}>
+                        <Text style={styles.title}>Đã trả</Text>
+                        <Text style={styles.number}>{data[5].mount}</Text>
                     </View>
                 </View>
             </View>
@@ -186,7 +198,7 @@ export default function Home() {
                 <PieChart
                     data={data}
                     width={Dimensions.get("window").width}
-                    height={250}
+                    height={220}
                     chartConfig={{
                         color: (opacity = 1) => `rgba(17, 45, 78, ${opacity})`,
                         style: {
@@ -209,7 +221,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#F9F7F7',
-        height: 100,
+        height: 80,
         flex: 1,
         marginHorizontal: 10,
         borderRadius: 10,
