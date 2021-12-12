@@ -43,40 +43,41 @@ export default function CODMoney() {
         setLastDate(currentDate);
     };
 
-    const hanldeFilter = () => {
-        const fetchStatistic = async () => {
-            try {
-                const item = {
-                    FirstDate: firstDate,
-                    LastDate: lastDate,
-                    StoreId: storeId
-                }
-                const list = await paymentApi.statistic(item, token);
-                var tempList = [];
-                var tempTotalPay = 0;
-                var tempTotal = 0;
-                list.forEach(item => {
-                    tempList.push([
-                        item.DeliveryId,
-                        item.Phone,
-                        format(new Date(item.OrderDate), 'dd-MM-yyyy'),
-                        numberWithCommas(item.COD),
-                        item.Status
-                    ])
-                    if (item.Status === 'Đã thanh toán') {
-                        tempTotalPay += parseInt(item.COD);
-                        tempTotal += parseInt(item.COD);
-                    } else {
-                        tempTotal += parseInt(item.COD);
-                    }
-                })
-                setData(tempList);
-                setTotalPay(tempTotalPay);
-                setTotal(tempTotal);
-            } catch (error) {
-                console.log('Fetch Statistic failed', error);
+    const fetchStatistic = async () => {
+        try {
+            const item = {
+                FirstDate: firstDate,
+                LastDate: lastDate,
+                StoreId: storeId
             }
+            const list = await paymentApi.statistic(item, token);
+            var tempList = [];
+            var tempTotalPay = 0;
+            var tempTotal = 0;
+            list.forEach(item => {
+                tempList.push([
+                    item.DeliveryId,
+                    item.Phone,
+                    format(new Date(item.OrderDate), 'dd-MM-yyyy'),
+                    numberWithCommas(item.COD),
+                    item.Status
+                ])
+                if (item.Status === 'Đã thanh toán') {
+                    tempTotalPay += parseInt(item.COD);
+                    tempTotal += parseInt(item.COD);
+                } else {
+                    tempTotal += parseInt(item.COD);
+                }
+            })
+            setData(tempList);
+            setTotalPay(tempTotalPay);
+            setTotal(tempTotal);
+        } catch (error) {
+            console.log('Fetch Statistic failed', error);
         }
+    }
+
+    const hanldeFilter = () => {
         setLoading(true);
         setTimeout(() => {
             fetchStatistic();
@@ -85,39 +86,6 @@ export default function CODMoney() {
     }
 
     useEffect(() => {
-        const fetchStatistic = async () => {
-            try {
-                const item = {
-                    FirstDate: firstDate,
-                    LastDate: lastDate,
-                    StoreId: storeId
-                }
-                const list = await paymentApi.statistic(item, token);
-                var tempList = [];
-                var tempTotalPay = 0;
-                var tempTotal = 0;
-                list.forEach(item => {
-                    tempList.push([
-                        item.DeliveryId,
-                        item.Phone,
-                        format(new Date(item.OrderDate), 'dd-MM-yyyy'),
-                        numberWithCommas(item.COD),
-                        item.Status
-                    ])
-                    if (item.Status === 'Đã thanh toán') {
-                        tempTotalPay += parseInt(item.COD);
-                        tempTotal += parseInt(item.COD);
-                    } else {
-                        tempTotal += parseInt(item.COD);
-                    }
-                })
-                setData(tempList);
-                setTotalPay(tempTotalPay);
-                setTotal(tempTotal);
-            } catch (error) {
-                console.log('Fetch Statistic failed', error);
-            }
-        }
         fetchStatistic();
     }, [])
 

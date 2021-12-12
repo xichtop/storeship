@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
         marginVertical: 3,
     },
     title: {
-        paddingVertical: 6,
+        paddingVertical: 3,
         fontSize: 18,
         color: '#112D4E',
     },
