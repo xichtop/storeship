@@ -5,7 +5,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Input, Button } from 'react-native-elements';
-import RNPickerSelect from 'react-native-picker-select';
 import SearchableDropdown from 'react-native-searchable-dropdown';
 import bankListApi from '../api/bankListAPI'
 import { useDispatch } from 'react-redux'

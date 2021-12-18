@@ -4,6 +4,7 @@ import { Button } from 'react-native-elements'
 import { Table, TableWrapper, Row } from 'react-native-table-component';
 import { useSelector } from 'react-redux'
 import { format, addDays } from 'date-fns'
+import { vi } from 'date-fns/locale'
 import numberWithCommas from '../utils/numberWithCommas'
 import paymentApi from '../api/paymentAPI';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
@@ -27,7 +28,7 @@ export default function CODMoney() {
 
     const [totalPay, setTotalPay] = useState(0);
 
-    const [firstDate, setFirstDate] = useState(addDays(new Date(), -30));
+    const [firstDate, setFirstDate] = useState(addDays(new Date(), -29));
 
     const [lastDate, setLastDate] = useState(addDays(new Date(), 1));
 
@@ -58,7 +59,7 @@ export default function CODMoney() {
                 tempList.push([
                     item.DeliveryId,
                     item.Phone,
-                    format(new Date(item.OrderDate), 'dd-MM-yyyy'),
+                    format(new Date(item.OrderDate.slice(0, 10)), 'dd-MM-yyyy'),
                     numberWithCommas(item.COD),
                     item.Status
                 ])
@@ -150,7 +151,7 @@ export default function CODMoney() {
             </View>
             <View style={styles.money}>
                 <Text style={styles.textmoney}>Tổng tiền: {numberWithCommas(total)} đ</Text>
-                <Text style={styles.textmoney}>Đã thanh toán: {numberWithCommas(totalPay)} đ</Text>
+                <Text style={styles.textmoney}>Đã nhận: {numberWithCommas(totalPay)} đ</Text>
                 <Text style={styles.textmoney}>Còn lại: {numberWithCommas(total - totalPay)} đ</Text>
             </View>
         </View>

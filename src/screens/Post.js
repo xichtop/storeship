@@ -646,7 +646,7 @@ export default function Post({ navigation }) {
                                     }}
                                     items={[
                                         { label: '0 - 30*30*30 : S', value: 'S', key: 'KS' },
-                                        { label: '30*30*30 - 50*50*50', value: 'M', key: 'KM' },
+                                        { label: '30*30*30 - 50*50*50: M', value: 'M', key: 'KM' },
                                         { label: '50*50*50 - 70*70*70 : L', value: 'L', key: 'KL' },
                                         { label: 'Lớn hơn 70*70*70 : XL', value: 'XL', key: 'KXL' },
                                     ]}

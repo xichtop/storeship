@@ -3,38 +3,11 @@ import { View, Text, Image, StyleSheet } from 'react-native'
 import { Button } from 'react-native-elements'
 import deliveryAPI from '../api/deliveryAPI'
 import { Tooltip } from 'react-native-elements';
-import { showMessage, hideMessage } from "react-native-flash-message";
 import { formatDistance, formatRelative, addHours } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import numberWithCommas from '../utils/numberWithCommas'
-import StepIndicator from 'react-native-step-indicator';
-const labels = ["Lấy hàng", "Đang giao", "Đã giao", "Đã hủy", "Đang trả", "Đã trả"];
-
-const customStyles = {
-    stepIndicatorSize: 30,
-    currentStepIndicatorSize: 35,
-    separatorStrokeWidth: 2,
-    currentStepStrokeWidth: 3,
-    stepStrokeCurrentColor: '#112D4E',
-    stepStrokeWidth: 3,
-    stepStrokeFinishedColor: '#112D4E',
-    stepStrokeUnFinishedColor: '#aaaaaa',
-    separatorFinishedColor: '#112D4E',
-    separatorUnFinishedColor: '#aaaaaa',
-    stepIndicatorFinishedColor: '#112D4E',
-    stepIndicatorUnFinishedColor: '#ffffff',
-    stepIndicatorCurrentColor: '#112D4E',
-    stepIndicatorLabelFontSize: 13,
-    currentStepIndicatorLabelFontSize: 13,
-    stepIndicatorLabelCurrentColor: '#ffffff',
-    stepIndicatorLabelFinishedColor: '#ffffff',
-    stepIndicatorLabelUnFinishedColor: '#aaaaaa',
-    labelColor: '#999999',
-    labelSize: 13,
-    currentStepLabelColor: '#112D4E'
-}
 
 
 export default function DeliveryDetail({ route, navigation }) {
@@ -42,8 +15,6 @@ export default function DeliveryDetail({ route, navigation }) {
     const token = useSelector(state => state.store.token);
 
     const { deliveryId } = route.params;
-
-    const [step, setStep] = useState(0);
 
     const [delivery, setDelivery] = useState({
         Picture: 'https://hoanggiaps.com/wp-content/uploads/2019/01/thung-carton-nap-day.jpg',
@@ -55,61 +26,12 @@ export default function DeliveryDetail({ route, navigation }) {
             try {
                 const temp = await deliveryAPI.getById(deliveryId, token);
                 setDelivery(temp);
-                if (temp.Status === 'Ordered') setStep(0);
-                else if (temp.Status === 'Delivering') setStep(1);
-                else if (temp.Status === 'Delivered') setStep(2);
-                else if (temp.Status === 'Canceled') setStep(3);
-                else if (temp.Status === 'Returning') setStep(4);
-                else if (temp.Status === 'Returned') setStep(5);
             } catch (error) {
                 console.log("Failed to fetch delivery: ", error);
             }
         }
         fetchDelivery();
     }, [])
-
-    const handleCancel = () => {
-        const fetchCancel = async () => {
-            var item = {
-                DeliveryId: deliveryId,
-                NewStatus: 'Canceled',
-            }
-            var result = null;
-            try {
-                result = await deliveryAPI.updateStatus(item, token);
-
-            } catch (error) {
-                console.log("Failed to fetch deliveries: ", error);
-            }
-
-            if (result.successful === true) {
-                showMessage({
-                    message: "Wonderfull!!!",
-                    description: "Hủy đơn hàng thành công",
-                    type: "success",
-                    duration: 1500,
-                    icon: 'auto',
-                    floating: true,
-                });
-                setStep(3);
-                setDelivery({
-                    ...delivery,
-                    Status: 'Canceled'
-                })
-            } else {
-                showMessage({
-                    message: "Hủy đơn hàng thất bại",
-                    description: "Vui lòng thử lại sau",
-                    type: "danger",
-                    duration: 1500,
-                    icon: 'auto',
-                    floating: true,
-                });
-            }
-        }
-
-        fetchCancel();
-    }
 
     return (
         <View style={styles.container}>
@@ -164,29 +86,29 @@ export default function DeliveryDetail({ route, navigation }) {
                         </View>
                         <View style={{ paddingVertical: 3, flexDirection: 'row', alignItems: 'center' }}>
                             <Icon name="expand-sharp" size={20} color='#FF577F' />
-                            <Text style={{ fontSize: 14, paddingLeft: 6 }}>Kích thước: {delivery.Size}</Text>
+                            <Text style={{ fontSize: 14, paddingLeft: 6 }}>Kích thước: {delivery.GoodSize}</Text>
                         </View>
                     </View>
                 </View>
             </View>
             <View style={styles.box}>
                 <Text style={styles.title}>Trạng thái đơn hàng</Text>
-                <StepIndicator
-                    customStyles={customStyles}
-                    stepCount={6}
-                    currentPosition={step}
-                    labels={labels}
-                />
+                {delivery.Status === 'Ordered' ?
+                    <Text>Chờ tiếp nhận</Text> : <View></View>}
+                {delivery.Status === 'Canceled' ?
+                    <Text>Đã hủy</Text> : <View></View>}
+                {delivery.Status !== 'Ordered' && delivery.Status !== 'Canceled' ?
+                    <Button title='Trạng thái chi tiết'
+                        onPress={() => navigation.navigate('Step', {
+                            DeliveryId: delivery.DeliveryId,
+                        })}
+                        buttonStyle={{ backgroundColor: '#112D4E', borderRadius: 10 }}
+                    />
+                    :
+                    <View></View>
+                }
+
             </View>
-            {delivery.Status === 'Ordered' ?
-                <View style={{ alignItems: 'center', paddingTop: 8 }}>
-                    <Button title='Hủy Đơn Hàng'
-                        onPress={handleCancel} 
-                        buttonStyle={{backgroundColor: '#112D4E', borderRadius: 10}}/>
-                </View>
-                :
-                <View></View>
-            }
         </View>
     )
 }

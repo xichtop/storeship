@@ -50,7 +50,7 @@ const schema = yup.object().shape({
         .trim('Mật khẩu không được chứa khoảng trắng').required('Mật khẩu không được để trống'),
     name: yup.string().required('Tên cửa hàng không được để trống'),
     phone: yup.string().required('Số điện thoại không được để trống'),
-    email: yup.string().required('Email không được để trống'),
+    email: yup.string().email('Vui lòng nhập đúng email').required('Email không được để trống'),
     address: yup.string().required('Địa chỉ không được để trống'),
     province: yup.string().required('Vui lòng chọn tỉnh/thành phố'),
     district: yup.string().required('Vui lòng chọn quận/huyện'),

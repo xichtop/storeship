@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import ReturnList from './ReturnList';
 import List from './List'
 import DeliveryDetail from '../components/DeliveryDetail'
+import Step from '../components/Step'
 
 const Tab = createMaterialTopTabNavigator();
 const ListStack = createNativeStackNavigator();
@@ -42,6 +43,7 @@ const ListScreen = () => {
             }}>
             <ListStack.Screen name='ListIndex' component={List} options={{ headerShown: false }} />
             <ListStack.Screen name='Detail' component={DeliveryDetail} options={{ title: 'Chi Tiết Đơn Hàng' }} />
+            <ListStack.Screen name='Step' component={Step} options={{ title: 'Trạng thái chi tiết' }} />
         </ListStack.Navigator>
     )
 }
@@ -66,6 +68,7 @@ const ReturnScreen = () => {
             }}>
             <ReturnStack.Screen name='ListIndex' component={ReturnList} options={{ headerShown: false }} />
             <ReturnStack.Screen name='Detail' component={DeliveryDetail} options={{ title: 'Chi Tiết Đơn Hàng' }} />
+            <ListStack.Screen name='Step' component={Step} options={{ title: 'Trạng thái chi tiết' }} />
         </ReturnStack.Navigator>
     )
 }

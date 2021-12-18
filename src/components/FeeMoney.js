@@ -53,8 +53,8 @@ export default function FastMoney() {
             list.forEach(item => {
                 tempList.push([
                     item.DeliveryId,
-                    format(new Date(item.OrderDate), 'dd-MM-yyyy'),
-                    format(new Date(item.DeliveryDate), 'dd-MM-yyyy'),
+                    format(new Date(item.OrderDate.slice(0, 10)), 'dd-MM-yyyy'),
+                    format(new Date(item.DeliveryDate.slice(0, 10)), 'dd-MM-yyyy'),
                     numberWithCommas(item.FeeShip),
                     item.Status
                 ])
@@ -126,8 +126,30 @@ export default function FastMoney() {
         if (total - totalPay === 0) {
             Alert.alert('Bạn đã thanh toán toàn bộ tiền COD!!!');
         } else {
-            setLoadingPay(true);
-            fetchPayFee();
+            Alert.alert(
+                "Thanh Toán Phí Giao Hàng",
+                "Bạn có chắc chắn muốn thanh toán toàn bộ phí giao hàng còn lại không?",
+                [
+                    {
+                        text: "Không",
+                        onPress: () => { },
+                        style: "destructive",
+                    },
+                    {
+                        text: "Có",
+                        onPress: () => {
+                            setLoadingPay(true);
+                            fetchPayFee();
+                            handleRefresh(); // ghi chú
+                        },
+                        style: "cancel",
+                    },
+                ],
+                {
+                    cancelable: true,
+                    onDismiss: () => {}
+                }
+            );
         }
     }
 

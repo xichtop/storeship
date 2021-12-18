@@ -15,6 +15,15 @@ const deliveryApi = {
   });
   },
 
+  checkById: (deliveryId, token) => {
+    const url = `/deliveries/checkbyidcancel/${deliveryId}`;
+    return axiosClient.get(url, {headers: {
+      "Content-type": "Application/json",
+      "Authorization": `Bearer ${token}`
+      }   
+  });
+  },
+
   getByStore: (storeId) => {
     const url = `/deliveries/getbystore/${storeId}`;
     return axiosClient.get(url);

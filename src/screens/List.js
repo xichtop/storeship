@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, View, Text, RefreshControl, StatusBar, FlatList, TouchableOpacity } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Text, RefreshControl, StatusBar, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { Button, Tooltip } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/Ionicons';
 import deliveryAPI from '../api/deliveryAPI';
 import { SearchBar } from 'react-native-elements';
+import { showMessage } from "react-native-flash-message";
 import { formatDistance, formatRelative, addHours } from 'date-fns'
 import { vi } from 'date-fns/locale'
 import { useSelector } from 'react-redux'
@@ -22,6 +23,8 @@ export default function List({ navigation }) {
     const [refreshing, setRefreshing] = useState(false);
 
     const [search, setSearch] = useState('');
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const [colors, setColors] = useState([
         { type: 'solid', color: '#F9F7F7' },
@@ -149,8 +152,90 @@ export default function List({ navigation }) {
         fetchListDeleiveries();
         setTimeout(() => {
             setRefreshing(false);
+            setIsLoading(false);
         }, 1000)
     };
+
+    const hanldeCancled = (DeliveryId) => {
+        const fetchupdateItem = async () => {
+            var item = {
+                DeliveryId: DeliveryId,
+                NewStatus: 'Canceled',
+            }
+            var result = null;
+            try {
+                result = await deliveryAPI.updateStatus(item, token);
+            } catch (error) {
+                console.log("Failed to fetch add item: ", error);
+            }
+
+            if (result.successful === true) {
+                setTimeout(() => {
+                    showMessage({
+                        message: "Wonderfull!!!",
+                        description: "Hủy đơn hàng thành công",
+                        type: "success",
+                        duration: 3000,
+                        icon: 'auto',
+                        floating: true,
+                    });
+                    onRefresh();
+                }, 2000);
+            } else {
+                setTimeout(() => {
+                    showMessage({
+                        message: "Hủy đơn hàng thất bại",
+                        description: "Vui lòng thử lại sau",
+                        type: "danger",
+                        duration: 3000,
+                        icon: 'auto',
+                        floating: true,
+                    });
+                    onRefresh();
+                }, 2000);
+            }
+        }
+
+        const fetchCheckItem = async () => {
+            var result = null;
+            try {
+                result = await deliveryAPI.checkById(DeliveryId, token);
+            } catch (error) {
+                console.log("Failed to fetch add item: ", error);
+            }
+
+            if (result.successful === true) {
+                fetchupdateItem();
+            } else {
+                Alert.alert('Hủy đơn hàng thất bại!!!', 'Đơn hàng đã được người giao hàng tiếp nhận');
+                onRefresh();
+            }
+        }
+
+        Alert.alert(
+            "Hủy Đơn Hàng",
+            "Bạn có chắc chắn muốn tạo đơn hàng này không?",
+            [
+                {
+                    text: "Không",
+                    onPress: () => { },
+                    style: "destructive",
+                },
+                {
+                    text: "Có",
+                    onPress: () => {
+                        setIsLoading(true);
+                        fetchCheckItem();
+                    },
+                    style: "cancel",
+                },
+            ],
+            {
+                cancelable: true,
+                onDismiss: () => {}
+            }
+        );
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -194,7 +279,7 @@ export default function List({ navigation }) {
                 containerStyle={{ backgroundColor: '#F9F7F7', height: 48 }}
                 inputContainerStyle={{ backgroundColor: '#DBE2EF', height: 24 }}
             />
-            <View style={{ alignItems: 'center', width: '100%', paddingTop: 10}}>
+            <View style={{ alignItems: 'center', width: '100%', paddingTop: 10 }}>
                 <FlatList
                     data={dataSearch}
                     renderItem={({ item }) =>
@@ -245,6 +330,15 @@ export default function List({ navigation }) {
                                     </TouchableOpacity>
                                 </View>
                             </View>
+                            {item.Status === 'Ordered' ?
+                                <Button title="Hủy đơn hàng"
+                                    onPress={() => hanldeCancled(item.DeliveryId)}
+                                    buttonStyle={{ backgroundColor: 'red', borderRadius: 15, marginBottom: 10, marginRight: 10 }}
+                                    loading={isLoading}
+                                />
+                                :
+                                <View></View>
+                            }
                         </View>
                     }
                     keyExtractor={item => item.DeliveryId.toString()}
