@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { View, Text, Image, StyleSheet } from 'react-native'
 import { Button } from 'react-native-elements'
 import deliveryAPI from '../api/deliveryAPI'
+import storeAPI from '../api/storeAPI'
 import { Tooltip } from 'react-native-elements';
 import { formatDistance, formatRelative, addHours } from 'date-fns'
 import { vi } from 'date-fns/locale'
@@ -25,7 +26,11 @@ export default function DeliveryDetail({ route, navigation }) {
         const fetchDelivery = async () => {
             try {
                 const temp = await deliveryAPI.getById(deliveryId, token);
-                setDelivery(temp);
+                const temp2 = await storeAPI.getSizes(token);
+                const temp3 = await storeAPI.getWeights(token);
+                const size = temp2.find(item => item.Id === temp.GoodSize);
+                const weight = temp3.find(item => item.Id === temp.GoodWeight);
+                setDelivery({...temp, GoodSize: size.Description, GoodWeight: weight.Description});
             } catch (error) {
                 console.log("Failed to fetch delivery: ", error);
             }

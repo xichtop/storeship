@@ -9,11 +9,14 @@ import RNPickerSelect from 'react-native-picker-select';
 import provinceAPI from '../api/provinceAPI';
 import districtAPI from '../api/districtAPI';
 import wardAPI from '../api/wardAPI';
+import storeAPI from '../api/storeAPI';
 import deliveryAPI from '../api/deliveryAPI';
 import { showMessage } from "react-native-flash-message";
 import TakePhoto from '../components/TakePhoto';
 import { useSelector } from 'react-redux';
 import SearchableDropdown from 'react-native-searchable-dropdown';
+import { useFocusEffect } from '@react-navigation/native';
+// import { useIsFocused } from '@react-navigation/native';
 
 const schema = yup.object().shape({
     name: yup.string().required('Tên người nhận không được để trống'),
@@ -43,6 +46,10 @@ export default function Post({ navigation }) {
 
     const [isLoading, setIsLoading] = useState(false);
 
+    const [sizes, setSizes] = useState([{ label: '0 - 30*30*30 : S', value: 'S', key: 'KS' }]);
+
+    const [weights, setWeights] = useState([{ label: '0 - 30*30*30 : S', value: 'S', key: 'KS' }]);
+
     const [provinces, setProvinces] = useState([{ id: 'tinh', name: 'Tỉnh' }]);
 
     const [districts, setDistricts] = useState([{ id: 'huyen', name: 'Huyện' }]);
@@ -61,21 +68,74 @@ export default function Post({ navigation }) {
 
     const [selectedWards, setSelectedWards] = useState([]);
 
+    useFocusEffect(
+        React.useCallback(() => {
+
+            const fetchListProvinces = async () => {
+                try {
+                    const sizeTemp = [];
+                    const weightTemp = [];
+                    const sizes = await storeAPI.getSizes(token);
+                    const weights = await storeAPI.getWeights(token);
+                    sizes.forEach(size => {
+                        sizeTemp.push({
+                            label: size.Description,
+                            value: size.Id,
+                            key: size.Id,
+                        })
+                    })
+                    console.log(sizeTemp, 'chạy lạiiiiii')
+                    setSizes(sizeTemp);
+                    weights.forEach(weight => {
+                        weightTemp.push({
+                            label: weight.Description,
+                            value: weight.Id,
+                            key: weight.Id,
+                        })
+                    })
+                    setWeights(weightTemp);
+                    console.log(weightTemp)
+                } catch (error) {
+                    console.log("Failed to fetch provinces list: ", error);
+                }
+            }
+            fetchListProvinces();
+        }, [])
+    );
+
     useEffect(() => {
         const fetchListProvinces = async () => {
             try {
                 const temp = [];
+                const sizeTemp = [];
+                const weightTemp = [];
                 const provincess = await provinceAPI.index();
+                const sizes = await storeAPI.getSizes(token);
+                const weights = await storeAPI.getWeights(token);
+
                 provincess.forEach(province => {
                     temp.push({
                         name: province.ProvinceName,
                         id: province.ProvinceCode,
-                        // label: province.ProvinceName,
-                        // value: province.ProvinceCode,
-                        // key: province.ProvinceCode,
                     })
                 })
                 setProvinces(temp);
+                sizes.forEach(size => {
+                    sizeTemp.push({
+                        label: size.Description,
+                        value: size.Id,
+                        key: size.Id,
+                    })
+                })
+                setSizes(sizeTemp);
+                weights.forEach(weight => {
+                    weightTemp.push({
+                        label: weight.Description,
+                        value: weight.Id,
+                        key: weight.Id,
+                    })
+                })
+                setWeights(weightTemp);
             } catch (error) {
                 console.log("Failed to fetch provinces list: ", error);
             }
@@ -144,6 +204,8 @@ export default function Post({ navigation }) {
                 GoodSize: data.goodSize,
                 GoodType: data.goodType,
             }
+
+            console.log(item);
             var result = null;
             try {
                 result = await deliveryAPI.addItem(item, token);
@@ -209,7 +271,7 @@ export default function Post({ navigation }) {
                 ],
                 {
                     cancelable: true,
-                    onDismiss: () => {}
+                    onDismiss: () => { }
                 }
             );
         }
@@ -594,12 +656,7 @@ export default function Post({ navigation }) {
                                             fontSize: 15,
                                         },
                                     }}
-                                    items={[
-                                        { label: 'Từ 0 đến 1 : S', value: 'S', key: 'S' },
-                                        { label: 'Từ 1 đến 3 : M', value: 'M', key: 'M' },
-                                        { label: 'Từ 3 đến 5 : L', value: 'L', key: 'L' },
-                                        { label: 'Lớn hơn 5 : XL', value: 'XL', key: 'XL' },
-                                    ]}
+                                    items={weights}
                                     Icon={() => {
                                         return (
                                             <Icon
@@ -644,12 +701,7 @@ export default function Post({ navigation }) {
                                             fontSize: 15,
                                         },
                                     }}
-                                    items={[
-                                        { label: '0 - 30*30*30 : S', value: 'S', key: 'KS' },
-                                        { label: '30*30*30 - 50*50*50: M', value: 'M', key: 'KM' },
-                                        { label: '50*50*50 - 70*70*70 : L', value: 'L', key: 'KL' },
-                                        { label: 'Lớn hơn 70*70*70 : XL', value: 'XL', key: 'KXL' },
-                                    ]}
+                                    items={sizes}
                                     Icon={() => {
                                         return (
                                             <Icon
